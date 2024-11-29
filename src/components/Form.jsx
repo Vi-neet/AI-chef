@@ -1,10 +1,11 @@
 import { useState } from "react";
 import IngredientsList from "./IngredientsList";
 import RecipeSection from "./RecipeSection";
+import {getRecipeFromMistral} from '../ai'
 
 const Form = () => {
-  const [ingredients, setIngredients] = useState(["Tomato","Tomato","Tomato","Tomato"]);
-  const [recipeShown, setRecipeShown] = useState(false);
+  const [ingredients, setIngredients] = useState([]);
+  const [recipe, setRecipe] = useState("");
 
 
 
@@ -14,8 +15,9 @@ const Form = () => {
     setIngredients((prevIngredients) => [...prevIngredients, newIngredient]);
   }
 
-  function handleRecipeSubmit() {
-    setRecipeShown((prevVal) => !prevVal);
+  async function getRecipe() {
+    const recipeMarkdown= await getRecipeFromMistral(ingredients)
+    setRecipe(recipeMarkdown)
   }
   return (
     <main>
@@ -32,10 +34,10 @@ const Form = () => {
       {ingredients.length > 0 && (
         <IngredientsList
           ingredients={ingredients}
-          toggle={handleRecipeSubmit}
+          toggle={getRecipe}
         />
       )}
-      {recipeShown && <RecipeSection />}
+      {recipe && <RecipeSection recipe={recipe}/>}
     </main>
   );
 };
